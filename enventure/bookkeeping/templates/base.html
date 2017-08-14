@@ -1,0 +1,136 @@
+
+{% load static from staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="description" content="Urb is a citizen engagement platform for non-emergency service requests in urban areas in developing countries. Urb seeks to spur connection and civic involvement by enabling people to come together and help shape their city’s future by taking concrete, collective action. Report and share complaints and concerns about the issues faced in your city for smart, inclusive, environmentally-friendly growth.">
+  <meta name="author" content="Sparkplug">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="/static/css/normalize.css">
+  <link rel="stylesheet" href="/static/css/urb.css">
+
+
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+  <!-- <link rel="icon" type="image/png" href="../../dist/images/favicon.png"> -->
+
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="http://urb.sparkpl.ug">
+  <meta name="twitter:title" content="Urb | Better Your City">
+  <meta name="twitter:description" content="Urb is a citizen engagement platform for non-emergency service requests in urban areas in developing countries. Urb seeks to spur connection and civic involvement by enabling people to come together and help shape their city’s future by taking concrete, collective action. Report and share complaints and concerns about the issues faced in your city for smart, inclusive, environmentally-friendly growth.">
+  <meta name="twitter:creator" content="@geturb">
+  <meta name="twitter:image:src" content="http://urb.sparkpl.ug/images/urb.png">
+  <meta property="twitter:domain" value="urb.sparkpl.ug"/>
+
+  <!-- Open Graph General -->
+  <meta property="og:url" content="http://urb.sparkpl.ug">
+  <meta property="og:title" content="Urb | Better Your City">
+  <meta property="og:description" content="Urb is a citizen engagement platform for non-emergency service requests in urban areas in developing countries. Urb seeks to spur connection and civic involvement by enabling people to come together and help shape their city’s future by taking concrete, collective action. Report and share complaints and concerns about the issues faced in your city for smart, inclusive, environmentally-friendly growth.">
+  <meta property="og:site_name" content="Urb | Better Your City">
+  <meta property="og:image" content="http://urb.sparkpl.ug/images/urb.png">
+  <meta property="og:image:width" content="1100" />
+  <meta property="og:image:height" content="1100" />
+  <meta property="fb:admins" content="1819752494936341">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+
+  <!-- change FB admins content -->
+
+  <!-- Google Plus -->
+  <meta itemprop="name" content="Urb | Better Your City">
+  <meta itemprop="description" content="Urb is a citizen engagement platform for non-emergency service requests in urban areas in developing countries. Urb seeks to spur connection and civic involvement by enabling people to come together and help shape their city’s future by taking concrete, collective action. Report and share complaints and concerns about the issues faced in your city for smart, inclusive, environmentally-friendly growth.">
+  <meta itemprop="image" content="http://urb.sparkpl.ug/images/urb.png">
+  <meta itemprop="applicationCategory" content="Citizen Engagement Platform">
+  <meta itemprop="operatingSystem" content="A modern browser with HTML5 and activated Javascript is required.">
+
+      {% block extra_head %}
+        {% endblock %}
+
+
+
+</head>
+<body>
+
+   <div  style="height:200px;background: #4C3E70;
+color: #fff;">
+    <div class="container">
+      <!-- <div class="row">
+        <div class="column"><h1>URB</h1></div>
+      </div> -->
+      <div class="row">
+          <h1>URB</h1>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="sectio" style="margin-top: 10px;">
+    <div class="container">
+
+
+         <div class="container">
+            <h1>{% block heading %}{% endblock %}</h1>
+            {% block content %}
+            {% endblock %}
+        </div>
+
+    </div>
+  </div>
+
+  <div class="section foot">
+    <div class="container">
+      <h4>Join us on Facebook and Twitter</h4>
+      <a class="button button-primary" target="_blank" href="https://facebook.com/geturb/">Like Us On Facebook</a>
+      <a class="button button-primary" target="_blank" href="https://twitter.com/geturb">Follow Us On Twitter</a>
+      <p>Made in Kampala by <a href="https://sparkpl.ug" target="_blank">Sparkplug</a></p>
+    </div>
+  </div>
+
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js" integrity="sha384-BLiI7JTZm+JWlgKa0M0kGRpJbF2J8q+qreVrKBC47e3K6BW78kGLrCkeRX6I9RoK" crossorigin="anonymous"></script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-40448209-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+        {% block extra_script %}
+        {% endblock %}
+
+        <script>
+          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+          ga('create', 'UA-40448209-2', 'auto');
+          ga('send', 'pageview');
+
+        </script>
+</body>
+</html>
