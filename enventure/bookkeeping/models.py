@@ -99,6 +99,10 @@ class Entry(models.Model):
     def _item(self):
       return self.item.name
 
+    @property
+    def created_ts(self):
+        return int(self.created.strftime("%s"))
+
 
 class Cbo(MPTTModel):
     name = models.CharField(max_length=50)

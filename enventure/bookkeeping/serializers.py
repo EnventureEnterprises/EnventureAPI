@@ -28,6 +28,8 @@ class ItemSerializer(serializers.ModelSerializer):
    
 class EntrySerializer(serializers.ModelSerializer):
     _item = serializers.CharField(required=False)
+    item = ItemSerializer(read_only=True)
+    created_ts = serializers.IntegerField(required=False)
 
     class Meta:
         model = models.Entry
