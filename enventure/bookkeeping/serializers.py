@@ -15,6 +15,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class ItemSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField('_image')
 
 
 
@@ -25,11 +26,18 @@ class ItemSerializer(serializers.ModelSerializer):
     def save(self):
         tm = super(ItemSerializer, self).save()
         return tm
+
+    def _image(self,obj):
+        request = self.context.get('request', None)
+        if request:
+            base = request.build_absolute_uri().rsplit("/",3)[0]
+            return base#+obj.image.url
    
 class EntrySerializer(serializers.ModelSerializer):
     _item = serializers.CharField(required=False)
     item = ItemSerializer(read_only=True)
     created_ts = serializers.IntegerField(required=False)
+
 
     class Meta:
         model = models.Entry

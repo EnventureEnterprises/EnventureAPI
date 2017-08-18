@@ -29,9 +29,14 @@ class ItemEndpoint(APIView):
         serializer =  serializers.ItemSerializer(data=request.data)
         if serializer.is_valid():
             data = request.data
+            image_obj = request.FILES.get("picture")
             user,_ = User.objects.get_or_create(mobile=data["mobile"])
             item,created = models.Item.objects.get_or_create(name=data["name"],created=parse(data["created"]))
+            if data.get("picture"):
+                item.image = data["picture"]
+                item.save()
             entry = models.Entry.objects.create(item=item,user=user,type="inventory",amount=Decimal(data["total_cost"]),quantity=int(data["quantity"]))
+
 
             return Response(serializers.ItemSerializer(item).data, status=status.HTTP_201_CREATED)
         else:
