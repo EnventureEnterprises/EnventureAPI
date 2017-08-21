@@ -30,8 +30,8 @@ class ItemSerializer(serializers.ModelSerializer):
     def _image(self,obj):
         request = self.context.get('request', None)
         if request:
-            base = request.build_absolute_uri().rsplit("/",3)[0]
-            return base#+obj.image.url
+            base = request.build_absolute_uri().rsplit("/",5)[0]
+            return base+obj.image.url
    
 class EntrySerializer(serializers.ModelSerializer):
     _item = serializers.CharField(required=False)
