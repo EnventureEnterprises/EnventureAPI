@@ -21,6 +21,13 @@ from django.core.urlresolvers import reverse_lazy
 from django_vanilla.django_vanilla import ListView, CreateView, DetailView, UpdateView, DeleteView
 from dateutil.parser import *
 from decimal import Decimal
+from rest_framework.status import HTTP_401_UNAUTHORIZED
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.authentication import BasicAuthentication,SessionAuthentication
+from rest_framework.permissions  import IsAuthenticated
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import authenticate
 
 
 class ItemEndpoint(APIView):
@@ -106,6 +113,71 @@ class NotificationDelete(DeleteView):
     model = Notification
     success_url = reverse_lazy('bookkeeping:notification-list')
 
+class ChangePassword(APIView):
+    """
+    An endpoint for changing password.
+    """
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = serializers.ChangePasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check old password
+            old_password = serializer.data.get("old_password")
+            if not self.object.check_password(old_password):
+                return Response({"old_password": ["Wrong password."]}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+            # set_password also hashes the password that the user will get
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            update_session_auth_hash(request, self.object)
+            return Response({"status":"success"})
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    accountType = request.data.get("accountType")
+    user = authenticate(username=username, password=password)
+    if not user:
+        return Response({"error": "Login failed"}, status=HTTP_401_UNAUTHORIZED)
+
+    token, _ = Token.objects.get_or_create(user=user)
+    if user.first_login == True:
+        first_login = False
+        user.first_login=True
+        user.save()
+    else:
+        first_login=True
+    return Response({"token": token.key,"first_login":first_login})
+
+@api_view(["POST"])
+def createAccount(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+    id = request.data.get("id")
+    accountType = request.data.get("accountType")
+    user = User.objects.create(
+            username = username,
+            account_type=accountType,
+
+    )
+    cbo = models.Cbo.objects.get(id=int(id))
+
+    user.set_password(request.data.get("password"))
+    user.save()
+    cbo.users.add(user)
+
+    return Response({"status": "success"})
+
 
 class TagEndpoint(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
@@ -118,6 +190,211 @@ class TagEndpoint(APIView):
         
         serializer = TagsSerializer(tags, many=True,context={'request':request})
         return Response(serializer.data)
+
+class CBOEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, pk):
+        try:
+            return models.Cbo.objects.get(pk=pk)
+        except models.Cbo.DoesNotExist:
+            raise Http404
+
+    def post(self, request):
+       
+        serializer =  serializers.CBOSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+      
+        cbos = models.Cbo.objects.all()
+       
+           
+        serializer = serializers.CBOSerializer(cbos, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        
+        cbo  = self.get_object(pk)
+
+        old = serializers.CBOSerializer(cbo).data.copy()
+        old.update(request.data)
+
+        serializer = serializers.CBOSerializer(cbo, data=old)
+        if serializer.is_valid():
+            cbo = serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class EnventureEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, pk):
+        try:
+            return models.Enventure.objects.get(pk=pk)
+        except models.Enventure.DoesNotExist:
+            raise Http404
+
+    def post(self, request):
+       
+        serializer =  serializers.EnventureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+      
+        enventures = models.Enventure.objects.all()  
+        serializer = serializers.EnventureSerializer(enventures, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        
+        enventure  = self.get_object(pk)
+
+        old = serializers.EnventureSerializer(enventure).data.copy()
+        old.update(request.data)
+
+        serializer = serializers.EnventureSerializer(enventure, data=old)
+        if serializer.is_valid():
+            enventure = serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AccountsEndpoint(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+
+    def post(self, request):
+       
+        serializer =  serializers.CBOSerializer(data=request.data)
+        if serializer.is_valid():
+            data = request.data
+            user,_ = User.objects.get_or_create(mobile=data["mobile"])
+            item,_ = models.Item.objects.get_or_create(name=data["name"])
+            entry = models.Entry.objects.create(item=item,user=user,type=data["type"],amount=Decimal(data["amount"]),quantity=int(data["quantity"]),created=parse(data["created"]),customer_mobile=data["customer_mobile"],transaction_type=data["transaction_type"])
+
+            return Response(serializers.CBOSerializer(entry).data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({}, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request):
+      
+        entries = models.Entry.objects.all()
+        mobile = self.request.GET.get("mobile")
+
+        if mobile:
+            entries = entries.filter(user__mobile="mobile")
+           
+        serializer = serializers.EntrySerializer(entries, many=True,context={'request':request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        """
+        Delete a post
+        ``````````````````````
+        :pparam integer id: the id of the post
+        """
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, pk):
+        """
+        Update an post
+        ``````````````````````
+
+        Update various attributes and configurable settings for the given
+       post
+
+        :pparam number id: id of the post
+
+        """
+
+       
+        post  = self.get_object(pk)
+
+        
+        
+        old = PostSerializer(post).data.copy()
+        old.pop("image")
+        old.update(request.data)
+
+        serializer = PostSerializer(post, data=old,context={'request': request})
+        if serializer.is_valid():
+            post = serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CBODataEndpoint(APIView):
+   
+    permission_classes = (IsAuthenticated,)
+
+    def get_object(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            raise Http404
+
+
+    def get(self, request):
+      
+        entries = models.Entry.objects.all()
+        mobile = self.request.GET.get("pk")
+           
+        serializer = serializers.EntrySerializer(entries, many=True,context={'request':request})
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        """
+        Delete a post
+        ``````````````````````
+        :pparam integer id: the id of the post
+        """
+        post = self.get_object(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CBODetailEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+
+
+    def get(self, request):
+        user=request.user
+        cbo =user.cbo
+    
+        serializer = serializers.CBOSerializer(cbo)
+        return Response(serializer.data)
+
+class EnventureDetailEndpoint(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user=request.user
+        enventure =user.enventure
+        serializer = serializers.EnventureSerializer(enventure,context={'request':request})
+        return Response(serializer.data)
+
+
 
 
 

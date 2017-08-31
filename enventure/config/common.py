@@ -40,6 +40,7 @@ class Common(Configuration):
          'users',
         'authentication',
         'bootstrap3',
+        'django_filters',
 
         'bookkeeping',
         'django_vanilla.django_vanilla',
@@ -202,6 +203,7 @@ class Common(Configuration):
             'rest_framework.renderers.JSONRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
         ),
+         'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
         'DEFAULT_PERMISSION_CLASSES': [
             'rest_framework.permissions.AllowAny',
         ],
@@ -210,6 +212,7 @@ class Common(Configuration):
             'rest_framework_social_oauth2.authentication.SocialAuthentication',
             'rest_framework.authentication.SessionAuthentication',
             'rest_framework.authentication.TokenAuthentication',
+            'rest_framework.authentication.BasicAuthentication',
         ),
         'DEFAULT_PARSER_CLASSES': (
            'rest_framework.parsers.JSONParser',

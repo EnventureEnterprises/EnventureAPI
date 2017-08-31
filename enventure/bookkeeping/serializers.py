@@ -2,6 +2,19 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 import models
 from users.models import User
+from django.contrib.auth.password_validation import validate_password
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
 
 
 
@@ -32,6 +45,34 @@ class ItemSerializer(serializers.ModelSerializer):
         if request:
             base = request.build_absolute_uri().rsplit("/",5)[0]
             return base+obj.image.url
+
+
+class AccountSerializer(serializers.ModelSerializer):
+  
+    class Meta:
+        model = models.Account
+
+class CBOSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(required=False)
+     
+
+    class Meta:
+        model = models.Cbo
+        fields = ('cboName','phoneNumber','email',"district","address","id")
+
+
+class EnventureSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(required=False)
+     
+
+    class Meta:
+        model = models.Enventure
+        fields = ('name','phoneNumber','email','dashboardAccess',"gender","age","id")
+class CBODataSerializer(serializers.ModelSerializer):
+  
+    class Meta:
+        model = models.Entry
+
    
 class EntrySerializer(serializers.ModelSerializer):
     _item = serializers.CharField(required=False)
@@ -83,6 +124,17 @@ class UserSerializer(serializers.ModelSerializer):
         instance.email = validated_data.get('email', instance.email)
         instance.save()
         return instance
+
+    def create(self, validated_data):
+
+        # create user 
+        user = User.objects.create(
+            username = validated_data['username']
+        )
+        user.set_password(validated_data["password"])
+
+
+        return user
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

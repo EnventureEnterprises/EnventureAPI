@@ -39,8 +39,44 @@ urlpatterns = [
     url(r'^api/v1/entries',
         views.EntryEndpoint.as_view(), name='api-entry-index'),
 
+
+     url(r'^api/v1/login',
+        views.login, name='api-login'),
+
+      url(r'^api/v1/createAccount',
+        views.createAccount, name='api-create-account'),
+
+       url(r'^api/v1/changePassword',
+        views.ChangePassword.as_view(), name='api-change-password'),
+
     url(r'^api/v1/items',
         views.ItemEndpoint.as_view(), name='api-item-index'),
+     url(r'^api/v1/cbos/(?P<pk>[0-9]+)/$',
+        views.CBOEndpoint.as_view(), name='api-cbos'),
+
+      url(r'^api/v1/cbos',
+        views.CBOEndpoint.as_view(), name='api-cbos'),
+
+      
+      url(r'^api/v1/enventures/(?P<pk>[0-9]+)/$',
+        views.EnventureEndpoint.as_view(), name='api-enventure'),
+
+
+      url(r'^api/v1/cboInfo',
+        views.CBODetailEndpoint.as_view(), name='api-enventure'),
+       url(r'^api/v1/enventures',
+        views.EnventureEndpoint.as_view(), name='api-enventure'),
+
+      url(r'^api/v1/enventureInfo',
+        views.EnventureDetailEndpoint.as_view(), name='api-enventure'),
+
+       
+
+       url(r'^api/v1/accounts',
+        views.AccountsEndpoint.as_view(), name='api-accounts'),
+
+          url(r'^api/v1/cbodata',
+        views.CBODataEndpoint.as_view(), name='api-cbo-data'),
 
     url(r'^auth/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url('', include('social.apps.django_app.urls', namespace='social')),

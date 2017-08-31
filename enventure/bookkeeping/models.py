@@ -109,10 +109,48 @@ class Cbo(MPTTModel):
     parent = TreeForeignKey(
         'self', blank=True, null=True, related_name='children'
     )
-    users = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="cbos",null=True)
+    
     code = models.CharField(max_length=8, blank=True, null=True)
     location = LocationField(based_fields=['place'], zoom=7, default=Point(1.0, 1.0))
-    place = models.CharField(max_length=100)
+    place = models.CharField(max_length=100,null=True,blank=True)
+    phoneNumber = models.CharField(max_length=200,null=True,blank=True)
+    cboName = models.CharField( max_length=200, blank=True)
+    email = models.EmailField ( max_length=200, blank=True)
+    district = models.CharField( max_length=200, blank=True,null=True)
+    post_views = models.IntegerField(default=0,blank=True,null=True)
+    district = models.CharField( max_length=200, blank=True,null=True)
+    is_active  = models.NullBooleanField()
+    first_login  = models.NullBooleanField()
+    account_type = models.CharField( max_length=200, blank=True,null=True)
+    address = models.CharField( max_length=200, blank=True,null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def accounts(self):
+        #sorting?
+        return self.account_objects.all()
+
+    def get_account(self, name):
+        return self.account_objects.get(name=name)
+
+
+class Enventure(MPTTModel):
+    name = models.CharField(max_length=50)
+    parent = TreeForeignKey(
+        'self', blank=True, null=True, related_name='children'
+    )    
+    code = models.CharField(max_length=8, blank=True, null=True)
+    location = LocationField(based_fields=['place'], zoom=7, default=Point(1.0, 1.0))
+    place = models.CharField(max_length=100,null=True,blank=True)
+    phoneNumber = models.CharField(max_length=200,null=True,blank=True)
+    email = models.EmailField ( max_length=200, blank=True)
+    age = models.IntegerField(default=0,blank=True,null=True)
+    district = models.CharField( max_length=200, blank=True,null=True)
+    is_active  = models.NullBooleanField()
+    dashboardAccess  = models.NullBooleanField()
+    account_type = models.CharField( max_length=200, blank=True,null=True)
+    address = models.CharField( max_length=200, blank=True,null=True)
+    gender = models.CharField( max_length=200, blank=True,null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -153,6 +191,10 @@ class Installation(djmodels.Model):
     updated = models.DateTimeField(auto_now=True)
     def __unicode__(self):
         return "%s"%(self.token)
+
+class CBOData(djmodels.Model):
+    class meta:
+         db_table = 'cbo_data'
 
 
 
