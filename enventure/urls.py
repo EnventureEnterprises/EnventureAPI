@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.conf import settings
@@ -40,13 +42,13 @@ urlpatterns = [
         views.EntryEndpoint.as_view(), name='api-entry-index'),
 
 
-     url(r'^api/v1/login',
+     url(r'^api/v1/login/',
         views.login, name='api-login'),
 
-      url(r'^api/v1/createAccount',
+      url(r'^api/v1/createAccount/',
         views.createAccount, name='api-create-account'),
 
-       url(r'^api/v1/changePassword',
+       url(r'^api/v1/changePassword/',
         views.ChangePassword.as_view(), name='api-change-password'),
 
     url(r'^api/v1/items',

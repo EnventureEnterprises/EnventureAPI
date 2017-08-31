@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 from django.shortcuts import render
 
 import models
@@ -28,6 +33,9 @@ from rest_framework.authentication import BasicAuthentication,SessionAuthenticat
 from rest_framework.permissions  import IsAuthenticated
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import authenticate
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 
 class ItemEndpoint(APIView):
@@ -163,18 +171,32 @@ def login(request):
 def createAccount(request):
     username = request.data.get("username")
     password = request.data.get("password")
-    id = request.data.get("id")
+    idd = request.data.get("id")
     accountType = request.data.get("accountType")
-    user = User.objects.create(
-            username = username,
-            account_type=accountType,
+    if not username:
+        return Response({"message": "username is required"},status=status.HTTP_400_BAD_REQUEST)
 
-    )
-    cbo = models.Cbo.objects.get(id=int(id))
+    if not id:
+        return Response({"message": "id is required"},status=status.HTTP_400_BAD_REQUEST)
+    if not password:
+        return Response({"message": "password is required"},status=status.HTTP_400_BAD_REQUEST)
 
-    user.set_password(request.data.get("password"))
-    user.save()
-    cbo.users.add(user)
+
+   
+    try:
+        user = User.objects.create(
+                username = username,
+                account_type=accountType,
+
+        )
+
+        cbo = models.Cbo.objects.get(id=int(idd))
+
+        user.set_password(request.data.get("password"))
+        user.save()
+        cbo.users.add(user)
+    except Exception as e:
+        return Response({"message": str(e)},status=status.HTTP_400_BAD_REQUEST)
 
     return Response({"status": "success"})
 
